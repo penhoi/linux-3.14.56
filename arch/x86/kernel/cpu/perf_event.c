@@ -67,6 +67,10 @@ u64 x86_perf_event_update(struct perf_event *event)
 
 	if (idx == INTEL_PMC_IDX_FIXED_BTS)
 		return 0;
+    /* start: add by penhoi */
+	if (hwc->config == 0x20cc)
+		return 0;
+    /* end */
 
 	/*
 	 * Careful: an NMI might modify the previous event value.
@@ -960,7 +964,10 @@ int x86_perf_event_set_period(struct perf_event *event)
 
 	if (idx == INTEL_PMC_IDX_FIXED_BTS)
 		return 0;
-
+    /* start: add by penhoi */
+	if (hwc->config == 0x20cc)
+        goto x20cc;
+    /* end */
 	/*
 	 * If we are way outside a reasonable range then just skip forward:
 	 */
@@ -993,7 +1000,7 @@ int x86_perf_event_set_period(struct perf_event *event)
 	 * mark it to be able to extra future deltas:
 	 */
 	local64_set(&hwc->prev_count, (u64)-left);
-
+x20cc:
 	wrmsrl(hwc->event_base, (u64)(-left) & x86_pmu.cntval_mask);
 
 	/*

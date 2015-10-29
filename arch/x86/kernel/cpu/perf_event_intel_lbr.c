@@ -139,7 +139,12 @@ static void __intel_pmu_lbr_enable(void)
 		wrmsrl(MSR_LBR_SELECT, cpuc->lbr_sel->config);
 
 	rdmsrl(MSR_IA32_DEBUGCTLMSR, debugctl);
-	debugctl |= (DEBUGCTLMSR_LBR | DEBUGCTLMSR_FREEZE_LBRS_ON_PMI);
+    /* start: modified by penhoi, ref PATCH v4 15/16 */
+	//-debugctl |= (DEBUGCTLMSR_LBR | DEBUGCTLMSR_FREEZE_LBRS_ON_PMI);
+    debugctl |= DEBUGCTLMSR_LBR;
+    if (!cpuc->lbr_sel && (cpuc->lbr_sel->config & LBR_JCC))
+        debugctl |= DEBUGCTLMSR_FREEZE_LBRS_ON_PMI;
+    /* end: */
 	wrmsrl(MSR_IA32_DEBUGCTLMSR, debugctl);
 }
 
