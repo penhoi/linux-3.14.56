@@ -965,9 +965,11 @@ int x86_perf_event_set_period(struct perf_event *event)
 	if (idx == INTEL_PMC_IDX_FIXED_BTS)
 		return 0;
     /* start: add by penhoi */
-	if (hwc->config == 0x20cc)
-        goto x20cc;
-    /* end */
+	if (hwc->config == 0x20cc) {
+		ret = 1;
+		goto x20cc;
+	}
+	/* end */
 	/*
 	 * If we are way outside a reasonable range then just skip forward:
 	 */
